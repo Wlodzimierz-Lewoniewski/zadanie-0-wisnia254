@@ -17,7 +17,7 @@ ilosc_pytan = int(input("Podaj liczbę zapytań: "))
 
 zbior_pytan = []
 
-for numer_pytania in range(ilosc_pytan):  # Poprawione "in range"
+for numer_pytania in range(ilosc_pytan):  
     zapytanie = input(f"Wprowadź zapytanie {numer_pytania}: ").strip().lower()
     zbior_pytan.append(zapytanie)
 
