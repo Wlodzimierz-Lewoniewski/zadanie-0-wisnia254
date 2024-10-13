@@ -1,45 +1,49 @@
 import string
 from collections import defaultdict
 
+# Funkcja do przetwarzania tekstu (usuwanie interpunkcji i zamiana na małe litery)
+def przeksztalc_tekst(wpis):
+    konwerter = str.maketrans('', '', string.punctuation)
+    return wpis.translate(konwerter).lower().split()
 
-def wyczysc_tekst(tekst):
-    translator = str.maketrans('', '', string.punctuation)
-    return tekst.translate(translator).lower().split()
+# Pobranie liczby dokumentów
+ilosc_plikow = int(input("Podaj liczbę plików: "))
 
-liczba_dokumentow = int(input("Ile dokumentów chcesz wprowadzić? "))
+zbior_plikow = []
 
-dokumenty = []
+# Wprowadzanie dokumentów
+for numer in range(ilosc_plikow):
+    tresc_pliku = input(f"Wprowadź treść pliku {numer}: ").strip()
+    zbior_plikow.append(tresc_pliku)
 
-for i in range(1, liczba_dokumentow + 1):
-    dokument = input(f"Wpisz treść dokumentu {i}: ").strip()
-    dokumenty.append(dokument)
+# Pobranie liczby zapytań
+ilosc_pytan = int(input("Podaj liczbę zapytań: "))
 
-liczba_slow = int(input("Ile zapytań chcesz wprowadzić? "))
+zbior_pytan = []
 
+# Wprowadzanie zapytań
+for numer_pytania in range(ilosc_pytan):  # Poprawione "in range"
+    zapytanie = input(f"Wprowadź zapytanie {numer_pytania}: ").strip().lower()
+    zbior_pytan.append(zapytanie)
 
-slowa = []
+# Słownik wyników
+mapa_wynikow = defaultdict(lambda: defaultdict(int))
 
-for i in range(1, liczba_slow + 1):
-    slowo = input(f"Wpisz zapytanie {i}: ").strip().lower()  # Zamiana na małe litery
-    slowa.append(slowo)
+# Przetwarzanie dokumentów i liczenie wystąpień zapytań
+for indeks_pliku, plik in enumerate(zbior_plikow):
+    zmodyfikowany_plik = przeksztalc_tekst(plik)
 
-wyniki = defaultdict(lambda: defaultdict(int))
+    for pytanie in zbior_pytan:
+        liczba_wystapien = zmodyfikowany_plik.count(pytanie)
+        mapa_wynikow[indeks_pliku][pytanie] = liczba_wystapien
 
-for i, dokument in enumerate(dokumenty):
-    dokument_id = i  # Indeks dokumentu
+# Generowanie wyników dla każdego zapytania
+for pytanie in zbior_pytan:
+    lista_wystapien = [(indeks_pliku, mapa_wynikow[indeks_pliku][pytanie]) for indeks_pliku in range(ilosc_plikow) if
+                       mapa_wynikow[indeks_pliku][pytanie] > 0]
 
-    oczyszczony_dokument = wyczysc_tekst(dokument)
+    lista_wystapien.sort(key=lambda x: (-x[1], x[0]))
 
-    for slowo in slowa:
-        liczba_wystapien = oczyszczony_dokument.count(slowo)  # Zliczanie słowa w oczyszczonym dokumencie
-        wyniki[dokument_id][slowo] = liczba_wystapien
-
-for slowo in slowa:
-    dokumenty_wyniki = [(doc_id, wyniki[doc_id][slowo]) for doc_id in range(liczba_dokumentow) if
-                        wyniki[doc_id][slowo] > 0]
-
-    dokumenty_wyniki.sort(key=lambda x: (-x[1], x[0]))
-
-    wynik = [doc_id for doc_id, _ in dokumenty_wyniki]
-    print(wynik)
+    wynik_koncowy = [indeks_pliku for indeks_pliku, _ in lista_wystapien]
+    print(wynik_koncowy)
 
